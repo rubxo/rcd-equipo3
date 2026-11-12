@@ -1,0 +1,12 @@
+EVIDENCIA: TRANSCRIPCION/REPORTE COMPARTIDO POR EL USUARIO EN EL CHAT, 8-NOV-2026.
+
+PC2 - ipconfig /all (extracto)
+IPv6 Address: 2001:1200:EA13:80:230:F2FF:FEAB:4DE8
+Default Gateway: FE80::250:FFF:FE73:9501
+DNS Servers: 2001:1200:EC13:10::53
+Connection-specific DNS Suffix: mvydjdr.net
+PC2 ping 2001:1200:EC13:10::80: 4 enviados, 4 recibidos, 0% pérdida.
+
+Usuario confirmó ping exitoso desde los otros equipos PC1-PC8.
+ALCANCE: se confirmó conectividad IPv6 reportada en 8 PCs.
+LIMITACION: no se aportó nueva captura ipconfig /all ni verificación de SLAAC/persistencia después de reiniciar para todos los PCs.

@@ -1,5 +1,7 @@
 # Continuar el proyecto RCD Equipo 3
 
+> **Guía histórica.** Para el montaje de entrega y el estado actualizado consulte [el cierre del 8 de noviembre](ESTADO_FINAL_2026-11-08.md).
+
 Guía de transferencia preparada el 6 de noviembre de 2026 para Juan David Rubio, Yeison David Niño, Miguel Medina y la persona que continúe la implementación.
 
 ## Punto de partida

@@ -1,0 +1,227 @@
+R1_BOG#show running-config
+Building configuration...
+
+Current configuration : 4914 bytes
+!
+version 12.4
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+service password-encryption
+!
+hostname R1_BOG
+!
+!
+!
+enable secret 5 $1$mERr$j4jSz8tq8MB380Pd.zgTx/
+!
+!
+!
+!
+!
+!
+no ip cef
+ipv6 unicast-routing
+!
+no ipv6 cef
+!
+ipv6 dhcp pool RCD3-STATELESS
+ dns-server 2001:1200:EC13:10::53
+ domain-name mvydjdr.net
+!
+!
+!
+username admin privilege 15 secret 5 $1$mERr$DTmHtGvJD1T.OQV9BxisU1
+!
+!
+crypto isakmp policy 10
+ encr aes 256
+ authentication pre-share
+ group 2
+!
+crypto isakmp key RCD3vpn2026 address 86.106.79.26
+!
+!
+!
+crypto ipsec transform-set RCD3-SET esp-aes 256 esp-sha-hmac
+!
+crypto map RCD3-MAP 10 ipsec-isakmp 
+ set peer 86.106.79.26
+ set transform-set RCD3-SET 
+ match address 141
+!
+!
+!
+!
+!
+!
+ip ssh version 2
+ip domain-name mvydjdr.net
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ no ip address
+ ipv6 address 2001:1200:ED13::1/128
+!
+interface Tunnel0
+ no ip address
+ mtu 1476
+ ipv6 address 2001:1200:ED13:300::1/64
+ ipv6 ospf 3 area 0
+ tunnel source Serial1/0
+ tunnel destination 86.106.79.26
+ tunnel mode ipv6ip
+!
+!
+interface FastEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/0.35
+ encapsulation dot1Q 35
+ ip address 10.3.35.1 255.255.255.0
+ ip helper-address 10.3.40.10
+ ip access-group SNMP-INTERNAL in
+ ipv6 address 2001:1200:EA13:35::1/64
+ ipv6 nd other-config-flag
+ ipv6 ospf 3 area 0
+ ipv6 dhcp server RCD3-STATELESS
+!
+interface FastEthernet0/0.40
+ encapsulation dot1Q 40
+ ip address 10.3.40.1 255.255.255.0
+ ip access-group SNMP-INTERNAL in
+ ipv6 address 2001:1200:EA13:40::1/64
+ ipv6 nd other-config-flag
+ ipv6 ospf 3 area 0
+ ipv6 dhcp server RCD3-STATELESS
+!
+interface FastEthernet0/0.80
+ encapsulation dot1Q 80
+ ip address 10.3.80.1 255.255.255.0
+ ip helper-address 10.3.40.10
+ ipv6 address 2001:1200:EA13:80::1/64
+ ipv6 nd other-config-flag
+ ipv6 ospf 3 area 0
+ ipv6 dhcp server RCD3-STATELESS
+!
+interface FastEthernet0/0.99
+ encapsulation dot1Q 99 native
+ ip address 10.3.99.1 255.255.255.0
+ ip access-group SNMP-INTERNAL in
+ ipv6 address 2001:1200:EA13:99::1/64
+ ipv6 ospf 3 area 0
+!
+interface FastEthernet0/1
+ description DMZ_IPV6
+ ip address 10.3.10.1 255.255.255.0
+ ip access-group WEB-DMZ4 out
+ ipv6 traffic-filter WEB-DMZ out
+ duplex auto
+ speed auto
+ ipv6 address 2001:1200:EC13:10::1/64
+ ipv6 ospf 3 area 0
+!
+interface Serial1/0
+ description WAN_ISP_BOG
+ ip address 86.106.79.1 255.255.255.252
+ ip access-group SNMP-INTERNAL in
+ ipv6 address 2001:1200:EC13:100::1/64
+ clock rate 64000
+ crypto map RCD3-MAP
+!
+interface Serial1/1
+ no ip address
+ clock rate 2000000
+!
+interface Serial1/2
+ no ip address
+ clock rate 2000000
+!
+interface Serial1/3
+ no ip address
+ clock rate 2000000
+!
+interface Vlan1
+ no ip address
+!
+router eigrp 3
+ network 86.106.79.0 0.0.0.3
+ network 10.3.0.0 0.0.127.255
+ no auto-summary
+!
+ipv6 router ospf 3
+ router-id 3.3.3.1
+ log-adjacency-changes
+!
+ip classless
+!
+ip flow-export version 9
+!
+ipv6 route 2001:1200:EB23::/48 2001:1200:ED13:300::2 200
+!
+access-list 80 permit 10.3.80.0 0.0.0.255
+ip access-list extended BLOCK-SNMP-GUEST
+ deny udp any any eq snmp
+ permit ip any any
+ip access-list extended WEB-DMZ4
+ permit tcp 10.3.35.0 0.0.0.255 host 10.3.10.80 eq www
+ deny tcp 10.3.35.0 0.0.0.255 host 10.3.10.80 eq 443
+ permit tcp 10.3.135.0 0.0.0.255 host 10.3.10.80 eq www
+ deny tcp 10.3.135.0 0.0.0.255 host 10.3.10.80 eq 443
+ permit tcp 10.3.80.0 0.0.0.255 host 10.3.10.80 eq 443
+ deny tcp 10.3.80.0 0.0.0.255 host 10.3.10.80 eq www
+ permit tcp 10.3.81.0 0.0.0.255 host 10.3.10.80 eq 443
+ deny tcp 10.3.81.0 0.0.0.255 host 10.3.10.80 eq www
+ permit ip any any
+ip access-list extended SNMP-INTERNAL
+ permit udp 10.3.80.0 0.0.0.255 any eq snmp
+ permit udp 10.3.81.0 0.0.0.255 any eq snmp
+ deny udp any any eq snmp
+ permit ip any any
+access-list 141 permit ip 10.3.0.0 0.0.127.255 10.3.81.0 0.0.0.255
+access-list 141 permit ip 10.3.0.0 0.0.127.255 10.3.128.0 0.0.127.255
+ipv6 access-list WEB-DMZ
+ permit tcp 2001:1200:EA13:35::/64 host 2001:1200:EC13:10::80 eq www
+ deny tcp 2001:1200:EA13:35::/64 host 2001:1200:EC13:10::80 eq 443
+ permit tcp 2001:1200:EA13:80::/64 host 2001:1200:EC13:10::80 eq 443
+ deny tcp 2001:1200:EA13:80::/64 host 2001:1200:EC13:10::80 eq www
+ permit tcp 2001:1200:EB23:35::/64 host 2001:1200:EC13:10::80 eq www
+ deny tcp 2001:1200:EB23:35::/64 host 2001:1200:EC13:10::80 eq 443
+ permit tcp 2001:1200:EB23:80::/64 host 2001:1200:EC13:10::80 eq 443
+ deny tcp 2001:1200:EB23:80::/64 host 2001:1200:EC13:10::80 eq www
+ permit udp any host 2001:1200:EC13:10::53 eq domain
+ permit tcp any host 2001:1200:EC13:10::53 eq domain
+ permit tcp host 2001:1200:EA13:80::14 host 2001:1200:EC13:10::50 eq 5000
+ permit icmp any any
+ permit ipv6 any any
+!
+banner motd ^CACCESO AUTORIZADO - PROYECTO RCD EQUIPO 3^C
+!
+!
+!
+!
+snmp-server community RCD3-RO RO
+snmp-server community RCD3-RW RW
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+!
+end
+
+
+R1_BOG#

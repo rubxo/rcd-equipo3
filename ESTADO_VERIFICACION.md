@@ -1,47 +1,22 @@
-# Verificación final — 2 de noviembre de 2026
+> **Nota histórica:** este estado representa verificaciones anteriores a la integración BLE final. Consulte [ESTADO_FINAL_2026-11-08.md](ESTADO_FINAL_2026-11-08.md) para resultados posteriores y reservas explícitas.
 
-## Pruebas demostradas mediante MCP
+# Estado de Verificación Final — 7 de noviembre de 2026
 
-| Prueba | Resultado observado |
-|---|---|
-| Inventario | 32 dispositivos y 32 enlaces |
-| Salud | Sin enlaces físicos caídos ni IPv4 duplicadas |
-| WAN R1→R2 | 5/5 respuestas IPv4 |
-| PC4→PC7 y PC7→PC4 | 4/4 en ambos sentidos tras corregir routing |
-| PC7→Tracker_Server | 4/4 IPv4 |
-| PC7→Web_Server IPv6 | 4/4 por Tunnel0 |
-| SLAAC en construcción | Direcciones automáticas observadas; persistencia al recargar no superada |
-| Servidores IPv6 | Web ::80, DNS ::53, Tracker ::50 y DHCP ::10 |
-| OSPFv3 | Vecindades FULL en túnel y tránsito R2–MLSW |
-| ACL Web IPv6 | Las ocho combinaciones de sede/tipo/puerto coincidieron con la política |
-| Web | Los cuatro clientes recuperaron la página personalizada por el protocolo permitido |
-| DNS | nslookup devolvió 10.3.10.80 y 2001:1200:EC13:10::80 |
-| Tracker TCP | Mensajes, ACK a PC4 y reenvío a PC7 observados |
-| Actividad | CAMBIO_BRUSCO en secuencia 4 |
-| Zona restringida | ZONA_RESTRINGIDA desde 60 segundos continuos; también ACK |
-| IPsec | SA ESP activa, contadores de cifrado/descifrado y decisiones ESP en Simulation Mode |
-| Simulation Mode | Traza del recorrido, decisiones TCP/IP, routing y cifrado |
-| Reapertura | 32 dispositivos, programas y servicios conservados |
+## 1. Resumen de Pruebas Verificadas en Cisco Packet Tracer 9.0.1
 
-Los resultados de cierre están identificados en `evidencias/INDICE.md`. Algunos archivos de etapas previas contienen incidencias corregidas; el prefijo final por sí solo no garantiza que sean la última prueba. El ZIP excluye las capturas fallidas de inicialización y conserva su explicación en este documento.
-
-Se exportaron las 13 configuraciones mediante `show running-config` completo a `configuraciones/*_running.txt`; los archivos sin ese sufijo son respaldos startup separados. La salud final no detectó enlaces caídos ni IPv4 duplicadas. El puerto físico R1 FastEthernet0/0 figura sin IP porque las direcciones están en sus subinterfaces.
-
-## Pendientes técnicos y diferencias del diseño
-
-- Tras recargar por la API, Packet Tracer vacía las direcciones IPv6 de PCs y puede dejar sockets en conexión. Se incluye y se prueba inicializar_proyecto_mcp.js, que aplica IPv6 estática de compatibilidad ::11 a ::18 y reinicia las aplicaciones en orden. La reapertura funcional se valida con ese inicializador; no se afirma persistencia autónoma ni cumplimiento del modo SLAAC previsto.
-- Las interfaces LAN no quedaron pasivas en la configuración final de OSPFv3 tras las pruebas de compatibilidad. No se afirma esa parte del plan como completada.
-
-- SNMP GET/SET: comunidades RO/RW y ACL SNMP-INTERNAL implementadas; falta registrar respuesta de MIB Browser desde Internal y su bloqueo desde las otras VLAN. No se sustituye esta prueba por la existencia de la configuración.
-- El túnel IPv6 sobre IPv4 se conserva en modo ipv6ip. GRE sobre IPsec se probó y perdió la vecindad; se restauró ipv6ip. IPsec AES-256/SHA está demostrado para IPv4, no para protocolo 41.
-- La DMZ conserva una superposición IPv4 para servicios y Tracker. El acceso Web IPv6 fue probado. La superposición es una desviación de la DMZ exclusivamente IPv6 indicada por el docente.
-- DHCPv6 sin estado lo sirven los gateways de cada sede. El servidor central posee pools DHCPv4 y relays. No se afirma un relay DHCPv6 central.
-- La actividad y el beacon se simulan por software. No hay asociación BLE de radio entre Thing y PC4.
-- Vista Web bonus: no implementada. El dashboard obligatorio en Programming funciona.
-- Se detectó que la exportación startup de la API abrevia la lista de VLAN permitidas. `show interfaces trunk` ofrece el estado vivo completo.
-- Después de reabrir se detectó que el filtro IPv4 de gestión interfería con respuestas IPv6. Se retiró de interfaces internas afectadas y se repitieron pings IPv6 con 4/4. La política SNMP restante necesita la prueba interactiva indicada.
-- La compatibilidad IPv4 de Guest MAD hacia Web no se considera validada; la matriz principal IPv6 sí pasó.
-
-## Acciones de los integrantes
-
-Completar actas con reuniones y contribuciones reales, ejecutar la prueba MIB Browser, grabar el video de diez minutos con cámaras, publicar Wiki, entregar en Teams y sustentar. Los formatos no acreditan asistencia ni aportes que no se hayan registrado.
+| Prueba / Requerimiento | Resultado Observado y Evidencia | Estado |
+|---|---|---|
+| **Inventario y Topología** | 32 dispositivos y 32 enlaces (`Proyecto_Final_RCD_Equipo3.pkt` / `Proyecto_FINAL.pkt`) | ✅ Verificado |
+| **Salud Física y Lógica** | 0 enlaces caídos, 0 direcciones IPv4 duplicadas (`evidencias/final_cierre_salud.txt`) | ✅ Verificado |
+| **WAN IPv4 (`EIGRP 3` / `OSPF 3`)** | 7 enlaces `/30`, redistribución en `ISP_FL` con `distance ospf external 175`, ping `R1`$\leftrightarrow$`R2` 5/5 | ✅ Verificado |
+| **Conectividad Inter-Sede (`PC4` $\leftrightarrow$ `PC7`)** | 4/4 respuestas en ambos sentidos con ruta específica `10.3.81.0/24` en `R2_ESP` | ✅ Verificado |
+| **Túnel IPv6 (`Tunnel0`) y `OSPFv3`** | Vecindades `FULL` en `Tunnel0` y tránsito `R2_ESP`–`MLSW_MAD`; ping `PC7`$\rightarrow$`Web_Server` IPv6 4/4 | ✅ Verificado |
+| **VPN `IPsec` (`AES-256 / SHA-1`)** | Asociación `ESP` activa entre `86.106.79.1` y `86.106.79.26`; incremento de `#pkts encaps/decaps` | ✅ Verificado |
+| **Servicios DMZ (`DNS` y `Web`)** | `nslookup mvydjdr.net` resuelve `10.3.10.80` (`A`) y `2001:1200:EC13:10::80` (`AAAA`); HTML personalizado | ✅ Verificado |
+| **Matriz ACL Web (`WEB-DMZ`)** | Guest (`VLAN 35`): permite HTTP 80 y bloquea HTTPS 443 · Internal (`VLAN 80`): permite HTTPS 443 y bloquea HTTP 80 | ✅ Verificado |
+| **Gestión `SNMP GET` (Internal VLAN 80)**| `PC4` (`10.3.80.14`) $\rightarrow$ `R1_BOG` (`10.3.80.1`): `GET sysName.0` devuelve `R1_BOG` (`evidencias/snmp_get_pc4.jpg`) | ✅ Verificado |
+| **Gestión `SNMP SET` (Internal VLAN 80)**| `PC4` $\rightarrow$ `R1_BOG`: `SET sysLocation.0` actualiza a `Sede_Bogota_RCD3` (`evidencias/snmp_set_pc4.jpg`) | ✅ Verificado |
+| **Bloqueo `SNMP` (Guest VLAN 35)** | `PC1` (`10.3.35.11`) $\rightarrow$ `R1_BOG`: bloqueado por `SNMP-INTERNAL` (`SNMP request timed out`, `evidencias/snmp_timeout_bloqueado_pc1.jpg`) | ✅ Verificado |
+| **Employee Tracker (`PC4` $\rightarrow$ `Server` $\rightarrow$ `PC7`)** | Envío TCP `5000`, `ACK`, reenvío TCP `5001` a `PC7`, alertas `CAMBIO_BRUSCO` (sec. 4) y `ZONA_RESTRINGIDA` ($\ge 60\text{ s}$) (`evidencias/tracker_*.jpg`) | ✅ Verificado |
+| **Configuraciones Exportadas (`.txt`)** | 13 archivos `configuraciones/*_running.txt` actualizados incluyendo las comunidades SNMP en `SW1_BOG`, `R2_ESP` y `MLSW_MAD` | ✅ Verificado |
+| **Documentación Wiki, Actas y Declaración IA**| `wiki/README.md`, `actas/ACTA_01.md`, `actas/MATRIZ_CONTRIBUCIONES.md` y `DECLARACION_IA.md` completos | ✅ Verificado |

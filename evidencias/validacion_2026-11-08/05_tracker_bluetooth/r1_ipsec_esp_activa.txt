@@ -1,0 +1,16 @@
+EVIDENCIA: RESUMEN FIEL DE SALIDA CLI PROPORCIONADA POR EL USUARIO, 8-NOV-2026.
+R1_BOG#show crypto ipsec sa
+interface: Serial1/0
+Crypto map tag: RCD3-MAP, local addr 86.106.79.1
+local ident: 10.3.0.0/255.255.128.0
+remote ident: 10.3.81.0/255.255.255.0
+current_peer 86.106.79.26 port 500
+#pkts encaps: 125, #pkts encrypt: 125
+#pkts decaps: 81, #pkts decrypt: 81
+#send errors 1, #recv errors 0
+current outbound spi: 0xC640ED53(3326143827)
+inbound esp sas: Status: ACTIVE, transform esp-aes 256 esp-sha-hmac
+outbound esp sas: Status: ACTIVE, transform esp-aes 256 esp-sha-hmac
+
+ALCANCE: Evidencia IPsec activa para selectores IPv4 hacia 10.3.81.0/24.
+NO prueba IPsec del protocolo 41/túnel IPv6.

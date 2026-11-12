@@ -1,0 +1,22 @@
+EVIDENCIA: TRANSCRIPCION COMPARTIDA POR EL USUARIO EN EL CHAT, 8-NOV-2026.
+No es una captura de pantalla. Dispositivos simulados en Cisco Packet Tracer.
+
+Beacon_Employee:
+Starting RCD Beacon (JavaScript)...
+=== BEACON DIAGNOSTICO ===
+Vinculos Bluetooth: 1
+Resultado de start(): true
+Preparado para envio directo
+ENVIO SOLICITADO 1: BEACON|EMP-001|TEST-1
+ENVIO SOLICITADO 2: BEACON|EMP-001|TEST-2
+ENVIO SOLICITADO 3: BEACON|EMP-001|TEST-3
+
+PC4:
+PC4 RECIBIO: BEACON|EMP-001|TEST-1
+PC4 RECIBIO: BEACON|EMP-001|TEST-2
+PC4 RECIBIO: BEACON|EMP-001|TEST-3
+
+Lecturas posteriores recibidas en PC4:
+PC4 RECIBIO: EMP-001|63|1794177832827|90|90|En movimiento
+PC4 RECIBIO: EMP-001|64|1794177834102|90|90|En movimiento
+PC4 RECIBIO: EMP-001|65|1794177835561|90|90|En movimiento

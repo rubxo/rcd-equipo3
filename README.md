@@ -1,53 +1,58 @@
-# Proyecto Final RCD — Equipo 3
+# Proyecto Final RCD — Equipo 3 (`mvydjdr.net` · $X = 3$)
 
-Repositorio de trabajo público para continuar la implementación. Última preparación de la transferencia, 6 de noviembre de 2026.
+**Asignatura:** Redes y Comunicación de Datos (2026-2)  
+**Integrantes:** Juan David Rubio · Yeison David Niño · Miguel Medina  
+**Estado del Proyecto:** ✅ Flujo Employee Tracker probado · ⚠️ diferencias de diseño y documentación delimitadas (8 de noviembre de 2026)
 
-**Empezar por [PENDIENTES_Y_ESTUDIO.md](PENDIENTES_Y_ESTUDIO.md).** Contiene apertura con y sin MCP, pendientes priorizados, criterios de cierre, ruta de estudio y pruebas de regresión.
+---
 
-```bash
-git clone https://github.com/rubxo/rcd-equipo3.git
-cd rcd-equipo3
-```
+## Estado de cierre 08/11/2026 — versión del equipo
 
-Abrir el `.pkt` principal en Cisco Packet Tracer. El programa y el MCP se instalan por separado. Para colaborar desde otra cuenta se puede hacer fork y pull request o solicitar acceso como colaborador a Juan.
+**Archivo de entrega:** [`Proyecto_RCD_Final.pkt`](Proyecto_RCD_Final.pkt) (no sustituye las copias históricas del repositorio). El archivo funcional incorpora enlace Bluetooth real entre `Beacon_Employee` y PC4, reenvío TCP a Tracker_Server y Dashboard PC7, y ambas alertas demostradas por el equipo. No se debe confundir con una afirmación de conformidad total de todos los requisitos.
 
-La copia `.pkt` incluida fue modificada localmente el 4 de noviembre. Las pruebas y configuraciones exportadas conservadas corresponden al 2 de noviembre. Repetirlas sobre el archivo recibido antes de dar por validada su versión actual. La preparación para GitHub comprobó archivos e integridad, y requiere una nueva ejecución de red para actualizar esa evidencia.
+- [Informe técnico completo](wiki/README.md)
+- [Cierre funcional y estado real de pruebas](wiki/CIERRE_FUNCIONAL_2026-11-08.md)
+- [Evidencias con capturas del 08/11/2026](wiki/EVIDENCIAS_VALIDACION_2026-11-08.md)
+- [Matriz final y reservas de cumplimiento](ESTADO_FINAL_2026-11-08.md)
 
-Los originales del enunciado y rúbrica están en `fuentes/`. El respaldo anterior y los manifiestos del paquete del 2 de noviembre están en `historico/`. El manifiesto de la transferencia actual está en la raíz. Las credenciales incluidas pertenecen al laboratorio académico.
+### Limitaciones declaradas
 
-Juan David Rubio · Yeison David Niño · Miguel Medina  
-Dominio: `mvydjdr.net` · X=3 · Corte: 2 de noviembre de 2026
+Se comprobó IPsec ESP para tráfico **IPv4**, no el cifrado del túnel IPv6 (protocolo 41). El Tracker aún utiliza IPv4 en la DMZ. SNMP Madrid se validó contra `R2_ESP`, no contra `MLSW_MAD`. El relay DHCPv6 central y la persistencia de todos los atributos IPv6 tras reabrir quedan sin verificación individual.
 
-Abrir `Proyecto_Final_RCD_Equipo3.pkt` en Cisco Packet Tracer. El archivo fue guardado y reabierto mediante MCP. Contiene 30 equipos del diseño y dos dispositivos de distribución eléctrica creados por PT: 32 dispositivos y 32 enlaces.
+---
 
-## Uso inmediato
+## Informe técnico del proyecto
 
-1. Esperar la convergencia de STP y OSPFv3 al abrir. Mediante MCP ejecutar el contenido de configuraciones/inicializar_proyecto_mcp.js; aplica IPv6 estática de compatibilidad a los PCs y reinicia los sockets. Esta necesidad de inicialización es una limitación de persistencia observada en PT, no una prueba de apertura autónoma perfecta.
-2. En PC4, Programming > **RCD Sender (JavaScript)** muestra TX y ACK.
-3. En Tracker_Server, **RCD Tracker (JavaScript)** muestra recepción, tiempo en zona y alertas.
-4. En PC7, **RCD Dashboard (JavaScript)** muestra último registro, historial y alertas.
-5. Las aplicaciones quedaron guardadas en ejecución. Para reiniciar la demostración, detener las tres y arrancar PC7, Tracker_Server y PC4 en ese orden.
-6. En PC1/PC5 abrir `http://mvydjdr.net`; en PC4/PC7 abrir `https://mvydjdr.net`. Para asegurar la prueba IPv6 usar `http://[2001:1200:EC13:10::80]` o su variante HTTPS.
+👉 **Ir al informe técnico completo con capturas y tablas: [`wiki/README.md`](wiki/README.md)**
 
-La demostración Tracker comienza con cambio brusco en secuencia 4, entra en zona restringida en secuencia 6 y permanece allí hasta secuencia 80. Después genera coordenadas y actividad aleatorias. El beacon es una fuente simulada por software; no se afirma detección de una radio BLE física.
+El informe técnico en Markdown se organiza según las secciones 2, 3 y 4 del enunciado:
+1. **Síntesis de la metodología estructurada** y tabla comparativa de decisiones de diseño.
+2. **Esquema de direccionamiento IPv4 e IPv6 ($X=3$)** con tablas completas de subredes WAN (`/30`), LAN/DMZ (`/64` y `/24`) e inventario de equipos.
+3. **Respuestas detalladas a todas las preguntas guía** de la sección de Procedimiento (numerales 3 al 8).
+4. **Resultados y Análisis de la experimentación** (numerales 1 al 4), incluyendo:
+   * Evaluación del flujo bidireccional del **Employee Tracker** (`PC4` $\rightarrow$ `Tracker_Server` $\rightarrow$ `PC7`) con capturas históricas y transcripciones de la variante BLE de las alertas `CAMBIO_BRUSCO` y `ZONA_RESTRINGIDA` ($\ge 60\text{ s}$).
+   * Evaluación del flujo bidireccional **SNMP (`GET` y `SET`)** desde la red interna (`PC4`) y demostración de bloqueo (`SNMP request timed out`) desde la VLAN de invitados (`PC1`).
+5. **Retos técnicos por capas TCP/IP**, conclusiones, recomendaciones y **referencias en formato IEEE**.
+6. **Roles, actas y matriz de contribuciones verificables** de cada integrante ([`actas/ACTA_01.md`](actas/ACTA_01.md) y [`actas/MATRIZ_CONTRIBUCIONES.md`](actas/MATRIZ_CONTRIBUCIONES.md)).
+7. **Declaración obligatoria de uso de IA** con el enlace de la sesión de trabajo y validación empírica ([`DECLARACION_IA.md`](DECLARACION_IA.md)).
 
-## Archivos
+---
 
-- `direccionamiento_y_rubrica.xlsx`: direccionamiento y matriz de pruebas.
-- `configuraciones/`: exportaciones IOS del proyecto.
-- `evidencias/`: resultados auténticos, direcciones, servicios, ACL, IPsec, Tracker y traza por capas.
-- `wiki/README.md`: informe técnico listo para publicar localmente.
-- `tracker/pt_*.js`: fuentes exactas de Programming instaladas en el .pkt. Los .py son prototipos de referencia para Python de escritorio, no programas cargados en PT.
-- `actas/`: formatos y propuesta de responsabilidades que deben completar los integrantes con hechos reales.
-- `video/`: guion y checklist.
-- `DECLARACION_IA.md`: herramienta, instrucciones y validación.
+## 📂 Estructura de Entregables del Repositorio
 
-## Credenciales de laboratorio
+* **[Montaje final](Proyecto_RCD_Final.pkt)** y **[manifiesto SHA-256 de la actualización](MANIFIESTO_SHA256.txt)**. Se conservan [la copia anterior del Equipo 3](Proyecto_Final_RCD_Equipo3.pkt) y [la copia histórica alternativa](Proyecto_FINAL.pkt).
+* **[`wiki/README.md`](wiki/README.md)**: Informe técnico navegable desde GitHub.
+* **[`direccionamiento_y_rubrica.xlsx`](direccionamiento_y_rubrica.xlsx)**: Libro Excel con las hojas `Resumen`, `Direccionamiento`, `WAN`, `Inventario`, `Pruebas` y `Rubrica`.
+* **[`configuraciones/`](configuraciones)**: Exportaciones históricas de 13 routers y switches. Véase el [inventario y alcance de las exportaciones](configuraciones/README.md).
+* **[`evidencias/`](evidencias)**: Capturas de pantalla auténticas de SNMP (`GET`, `SET`, `Timeout`), consolas en vivo del Employee Tracker, trazas de *Simulation Mode*, contadores IPsec y matriz de ACLs.
+* **[`tracker/`](tracker)**: Cuatro [fuentes JavaScript reconstruidas](tracker/PROTOCOLO.md) y prototipos históricos.
+* **[`actas/`](actas)**: Actas de reunión y evaluación del equipo (`ACTA_01.md`) y matriz de contribuciones (`MATRIZ_CONTRIBUCIONES.md`).
+* **[`DECLARACION_IA.md`](DECLARACION_IA.md)**: Registro transparente de herramientas de IA consultadas, enlace de conversación y pruebas de validación.
 
-Usuario IOS `admin`, clave `Rcd3Admin2026`, enable `Rcd3Enable2026`, PSK `RCD3vpn2026`, comunidades `RCD3-RO` y `RCD3-RW`.
+---
 
-## Límites de la entrega local
+## Credenciales del laboratorio
 
-SNMP está configurado con comunidades y filtro por origen, pero los GET/SET con MIB Browser requieren la comprobación interactiva final. La vista Web bonus del Tracker no se incluyó porque PC-PT rechaza HTTPServer en Programming. El túnel IPv6 funciona; el cifrado demostrado es IPsec sobre tráfico IPv4. No se afirma que protocolo 41 esté cifrado. Ver `ESTADO_VERIFICACION.md`.
+Las contraseñas administrativas, comunidades SNMP y llaves precompartidas no deben publicarse en un repositorio público. Consultar la configuración de laboratorio en un canal autorizado. Si las claves ya se publicaron, evitar reutilizarlas fuera del simulador.
 
-Este repositorio publica el material de trabajo por autorización del usuario del 6 de noviembre de 2026. La entrega académica en Teams y el video siguen pendientes. El enunciado fija entrega en Teams el 10 de noviembre de 2026 a las 23:00 y sustentación el 11 de noviembre a las 09:00.
+`MANIFEST_SHA256.txt` e `INTEGRIDAD.json` corresponden al registro histórico. `MANIFIESTO_SHA256.txt` registra el montaje y los archivos de la actualización incorporados a esta entrega.

@@ -183,6 +183,8 @@ banner motd ^CACCESO AUTORIZADO - PROYECTO RCD EQUIPO 3^C
 !
 !
 !
+snmp-server community RCD3-RO RO
+snmp-server community RCD3-RW RW
 !
 line con 0
 !

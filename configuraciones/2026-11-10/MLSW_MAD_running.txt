@@ -1,0 +1,209 @@
+MLSW_MAD#show running-config
+Building configuration...
+
+Current configuration : 3635 bytes
+!
+version 16.3.2
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+service password-encryption
+!
+hostname MLSW_MAD
+!
+!
+no profinet
+enable secret 5 $1$mERr$j4jSz8tq8MB380Pd.zgTx/
+!
+!
+!
+!
+!
+!
+no ip cef
+ip routing
+!
+ipv6 unicast-routing
+!
+no ipv6 cef
+!
+ipv6 dhcp pool RCD3-STATELESS-MAD
+ dns-server 2001:1200:EC13:10::53
+ domain-name mvydjdr.net
+!
+!
+!
+username admin privilege 15 secret 5 $1$mERr$DTmHtGvJD1T.OQV9BxisU1
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip ssh version 2
+ip domain-name mvydjdr.net
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree vlan 35,40,80,99 priority 24576
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet1/0/1
+ no switchport
+ ip address 10.3.200.2 255.255.255.252
+ ip access-group SNMP-R2-RETURN in
+ duplex auto
+ speed auto
+ ipv6 address 2001:1200:EB23:200::2/64
+ ipv6 ospf 3 area 0
+!
+interface GigabitEthernet1/0/2
+ switchport trunk native vlan 99
+ switchport mode trunk
+!
+interface GigabitEthernet1/0/3
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 35,40,80,99
+ switchport mode trunk
+!
+interface GigabitEthernet1/0/4
+!
+interface GigabitEthernet1/0/5
+!
+interface GigabitEthernet1/0/6
+!
+interface GigabitEthernet1/0/7
+!
+interface GigabitEthernet1/0/8
+!
+interface GigabitEthernet1/0/9
+!
+interface GigabitEthernet1/0/10
+!
+interface GigabitEthernet1/0/11
+!
+interface GigabitEthernet1/0/12
+!
+interface GigabitEthernet1/0/13
+!
+interface GigabitEthernet1/0/14
+!
+interface GigabitEthernet1/0/15
+!
+interface GigabitEthernet1/0/16
+!
+interface GigabitEthernet1/0/17
+!
+interface GigabitEthernet1/0/18
+!
+interface GigabitEthernet1/0/19
+!
+interface GigabitEthernet1/0/20
+!
+interface GigabitEthernet1/0/21
+!
+interface GigabitEthernet1/0/22
+!
+interface GigabitEthernet1/0/23
+!
+interface GigabitEthernet1/0/24
+!
+interface GigabitEthernet1/1/1
+!
+interface GigabitEthernet1/1/2
+!
+interface GigabitEthernet1/1/3
+!
+interface GigabitEthernet1/1/4
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan35
+ mac-address 00e0.f726.0b01
+ ip address 10.3.135.1 255.255.255.0
+ ip helper-address 10.3.40.10
+ ipv6 address 2001:1200:EB23:35::1/64
+ ipv6 nd other-config-flag
+ ipv6 ospf 3 area 0
+ ipv6 dhcp server RCD3-STATELESS-MAD
+ ip access-group SNMP-INTERNAL in
+!
+interface Vlan40
+ mac-address 00e0.f726.0b02
+ ip address 10.3.140.1 255.255.255.0
+ ipv6 address 2001:1200:EB23:40::1/64
+ ipv6 nd other-config-flag
+ ipv6 ospf 3 area 0
+ ipv6 dhcp server RCD3-STATELESS-MAD
+ ip access-group SNMP-INTERNAL in
+!
+interface Vlan80
+ mac-address 00e0.f726.0b03
+ ip address 10.3.81.1 255.255.255.0
+ ip helper-address 10.3.40.10
+ ipv6 address 2001:1200:EB23:80::1/64
+ ipv6 nd other-config-flag
+ ipv6 ospf 3 area 0
+ ipv6 dhcp server RCD3-STATELESS-MAD
+!
+interface Vlan99
+ mac-address 00e0.f726.0b04
+ ip address 10.3.199.1 255.255.255.0
+ ipv6 address 2001:1200:EB23:99::1/64
+ ipv6 ospf 3 area 0
+ ip access-group SNMP-INTERNAL in
+!
+ipv6 router ospf 3
+ router-id 3.3.3.7
+ log-adjacency-changes
+!
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.3.200.1 
+!
+ip flow-export version 9
+!
+!
+access-list 81 permit 10.3.81.0 0.0.0.255
+ip access-list extended SNMP-INTERNAL
+ permit udp 10.3.80.0 0.0.0.255 any eq snmp
+ permit udp 10.3.81.0 0.0.0.255 any eq snmp
+ deny udp any any eq snmp
+ permit ip any any
+ip access-list extended SNMP-R2-RETURN
+ permit udp 10.3.80.0 0.0.0.255 any eq snmp
+ permit udp 10.3.81.0 0.0.0.255 any eq snmp
+ permit udp host 10.3.200.1 host 10.3.81.17 eq snmp
+ deny udp any any eq snmp
+ permit ip any any
+!
+banner motd ^CACCESO AUTORIZADO - PROYECTO RCD EQUIPO 3^C
+!
+!
+!
+snmp-server community RCD3-RO RO
+snmp-server community RCD3-RW RW
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+!
+!
+end
+
+
+MLSW_MAD#

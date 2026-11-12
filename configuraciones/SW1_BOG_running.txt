@@ -98,6 +98,8 @@ ip default-gateway 10.3.99.1
 banner motd ^CACCESO AUTORIZADO - PROYECTO RCD EQUIPO 3^C
 !
 !
+snmp-server community RCD3-RO RO
+snmp-server community RCD3-RW RW
 !
 access-list 80 permit 10.3.80.0 0.0.0.255
 line con 0
